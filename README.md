@@ -80,3 +80,84 @@ You can use Graphql;
 When you finish your challenge, after forking a repository, you **must** open a pull request to our repository. There are no limitations to the implementation, you can follow the programming paradigm, modularization, and style that you feel is the most appropriate solution.
 
 If you have any questions, please let us know.
+
+
+## Apps Files
+
+Two apps's Nest.js `app-anti-fraud`, `app-transaction`
+
+    .
+    ├── ...
+    ├── app-anti-fraud          # App Antifraud (Nest.js, Kafka Client) Validate transactions value
+    ├── app-transaction         # App Transaction (Nest.js, Apollo Server, TypeORM, Kafka Client) Mutation save transactions and consumer for change status
+    └── ...
+
+## Apps Diagram
+
+![](./assets/apps-diagram.jpeg)
+
+## Data Base Diagram
+
+![](./assets/db-diagram.png)
+
+### `1 - Up Docker Containers:`
+
+```bash
+# (postgres, zookeeper, kafka, app-transaction, app-anti-fraud)
+$ docker-compose up
+```
+
+### `2 - Import database:`
+```bash
+docker-compose exec -i postgres psql -U postgres -d postgres < ./sql/init.sql"
+```
+
+### `Local:`
+| Resource            | Url                                                                                        |
+|---------------------|--------------------------------------------------------------------------------------------|
+| app-transaction     | [http://localhost:3000](http://localhost:3000)                                             |
+| Playground Graphql  | [http://localhost:3000/graphql](http://localhost:3000/graphql)                             |
+| app-anti-fraud      | [http://localhost:4000](http://localhost:4000)                                             |
+
+### `Mutation create transactions:` [http://localhost:3000/graphql](http://localhost:3000/graphql)
+```graphql
+mutation {
+  create(value: 300, tranferTypeId: 1, accountExternalIdDebit: "Guid", accountExternalIdCredit: "Guid") {
+    id
+    debit
+    transactionType {
+      name
+    }
+    transactionStatus {
+      name
+    }
+    value
+    createdAt
+  }
+}
+```
+
+### `Query transactions:` [http://localhost:3000/graphql](http://localhost:3000/graphql)
+```graphql
+query {
+  transactions {
+    debit
+    transactionType {
+      name
+    }
+    transactionStatus {
+      name
+    }
+    value
+    createdAt
+  }
+}
+```
+
+## Daniel Villanueva
+
+- Email: [villanueva.danielx@gmail.com](mail://villanueva.danielx@gmail.com)
+
+- Github: [@danieljvx](https://github.com/danieljvx)
+
+- Linkedin - [Daniel Villanueva](https://www.linkedin.com/in/danieljx)

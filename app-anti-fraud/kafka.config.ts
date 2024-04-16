@@ -4,7 +4,7 @@ import { ClientEnum } from 'src/enums/client.enum';
 
 const kafka = new Kafka({
   clientId: ClientEnum.ID,
-  brokers: ['localhost:9092'],
+  brokers: ['kafka:9092'],
   logLevel: logLevel.ERROR,
 });
 

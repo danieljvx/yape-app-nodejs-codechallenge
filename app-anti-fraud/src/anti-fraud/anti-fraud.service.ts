@@ -3,6 +3,7 @@ import { kafkaConsumer, kafkaProducer } from 'kafka.config';
 import { Producer } from 'kafkajs';
 import { TransactionDto } from './dto/transaction.dto';
 import { TopicsEnum } from 'src/enums/topics.enum';
+import { ValueEnum } from 'src/enums/value.enum';
 
 @Injectable()
 export class AntiFraudService {
@@ -12,7 +13,8 @@ export class AntiFraudService {
   }
 
   private async validate(transaction: TransactionDto): Promise<void> {
-    transaction.transactionStatus.id = 2;
+    transaction.transactionStatus.id =
+      transaction.value <= ValueEnum.MAX_LIMIT ? 2 : 3;
     await this.sendTransactionStatusEvent(transaction);
   }
 
