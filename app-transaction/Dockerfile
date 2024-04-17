@@ -6,6 +6,8 @@ COPY package*.json ./
 
 RUN yarn install --pure-lockfile --allow-root
 
+COPY .env.example .env
+
 COPY . .
 
 RUN yarn build
