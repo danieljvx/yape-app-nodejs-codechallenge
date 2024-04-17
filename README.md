@@ -90,6 +90,10 @@ Two apps's Nest.js `app-anti-fraud`, `app-transaction`
     ├── ...
     ├── app-anti-fraud          # App Antifraud (Nest.js, Kafka Client) Validate transactions value
     ├── app-transaction         # App Transaction (Nest.js, Apollo Server, TypeORM, Kafka Client) Mutation save transactions and consumer for change status
+    ├── sql
+    │   ├── init.sql            # database structure
+    │   ├── data.sql            # default data types and status
+    ├── assets                  # image diagrams
     └── ...
 
 ## Apps Diagram
