@@ -12,7 +12,11 @@ export class KafkaProucerService
 {
   private readonly kafka = new Kafka({
     clientId: ClientEnum.ID,
-    brokers: ['kafka:9092'],
+    brokers: [
+      `${process.env.KAFKA_HOST || 'localhost'}:${
+        process.env.KAFKA_PORT || 9092
+      }`,
+    ],
   });
 
   private readonly producer: Producer = this.kafka.producer();

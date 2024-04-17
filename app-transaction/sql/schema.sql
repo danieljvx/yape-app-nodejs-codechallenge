@@ -1,4 +1,3 @@
-
 CREATE SEQUENCE transaction_type_id_seq;
 
 CREATE TABLE transaction_type (
@@ -12,10 +11,6 @@ CREATE TABLE transaction_type (
 
 ALTER SEQUENCE transaction_type_id_seq OWNED BY transaction_type.id;
 
-INSERT INTO transaction_type(name, "createdAt", "updatedAt")
-VALUES('Type 1', NOW(), NOW()),
-      ('Type 2', NOW(), NOW());
-
 CREATE SEQUENCE transaction_status_id_seq;
 
 CREATE TABLE transaction_status (
@@ -27,11 +22,6 @@ CREATE TABLE transaction_status (
 );
 
 ALTER SEQUENCE transaction_status_id_seq OWNED BY transaction_status.id;
-
-INSERT INTO transaction_status(name, "createdAt", "updatedAt")
-VALUES('Pendiente', NOW(), NOW()),
-      ('Aprobado', NOW(), NOW()),
-      ('Rechazado', NOW(), NOW());
 
 CREATE SEQUENCE transaction_id_seq;
 

@@ -2,11 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Transaction } from './entities/transaction.entity';
-// import { kafkaConsumer, kafkaProducer } from 'kafka.config';
 import { Producer } from 'kafkajs';
 import { KafkaProucerService } from '../kafka/kafka-producer.service';
 import { KafkaConsumerService } from '../kafka/kafka-consumer.service';
 import { TopicsEnum } from 'src/enums/topics.enum';
+import { TransactionTopicStatus } from './dto/transaction-topic-status.dto';
+import { TransactionTopicCreated } from './dto/transaction-topic-created.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -42,7 +43,14 @@ export class TransactionsService {
 
     const transaction = await this.transactionsRepository.save(tCreate);
     const transactionResponse = await this.findOneById(transaction.id);
-    await this.sendTransactionCreatedEvent(transactionResponse);
+    const transactionTopicCreated: TransactionTopicCreated = {
+      id: transactionResponse.id,
+      accountExternalIdDebit: transactionResponse.debit,
+      accountExternalIdCredit: transactionResponse.credit,
+      tranferTypeId: transactionResponse.transactionType.id,
+      value: transactionResponse.value,
+    };
+    await this.sendTransactionCreatedEvent(transactionTopicCreated);
     return transactionResponse;
   }
 
@@ -68,24 +76,21 @@ export class TransactionsService {
   }
 
   private async updateTransactionStatus(
-    id: number,
-    statusId: number,
+    transactionTopicStatus: TransactionTopicStatus,
   ): Promise<void> {
     await this.transactionsRepository.update(
-      { id },
+      { id: transactionTopicStatus.id },
       {
-        transactionStatus: { id: statusId },
+        transactionStatus: { id: transactionTopicStatus.status },
       },
     );
   }
 
   private async sendTransactionCreatedEvent(
-    transaction: Transaction,
+    transaction: TransactionTopicCreated,
   ): Promise<void> {
-    console.log(
-      `Send message transaction-created:\n${JSON.stringify(transaction)}`,
-    );
-    // await this.kafkaProucerService.produce.connect();
+    console.log('Transaction - Send message transaction-created:');
+    console.log(transaction);
     await this.kafkaProucerService.produce({
       topic: TopicsEnum.TRANSACTION_CREATED,
       messages: [
@@ -94,7 +99,6 @@ export class TransactionsService {
         },
       ],
     });
-    // await kafkaProducer.disconnect();
   }
 
   private async initializeTransactionStatusConsumer(): Promise<void> {
@@ -107,13 +111,12 @@ export class TransactionsService {
         eachMessage: async ({ message }) => {
           const ourBuffer = Buffer.from(message.value);
           const t = ourBuffer.toString('utf8');
-          console.log('Received Status Transaction:\n');
+          console.log('Transaction - Received message transaction-status:');
           console.log(t);
-          const transaction = JSON.parse(t);
-          this.updateTransactionStatus(
-            transaction.id,
-            transaction.transactionStatus.id,
-          );
+          const transactionTopicStatus: TransactionTopicStatus = JSON.parse(
+            t,
+          ) as TransactionTopicStatus;
+          this.updateTransactionStatus(transactionTopicStatus);
         },
       },
     );

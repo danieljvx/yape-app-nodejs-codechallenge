@@ -1,10 +1,13 @@
-// kafka.config.ts
 import { Kafka, logLevel } from 'kafkajs';
 import { ClientEnum } from 'src/enums/client.enum';
 
 const kafka = new Kafka({
   clientId: ClientEnum.ID,
-  brokers: ['kafka:9092'],
+  brokers: [
+    `${process.env.KAFKA_HOST || 'localhost'}:${
+      process.env.KAFKA_PORT || 9092
+    }`,
+  ],
   logLevel: logLevel.ERROR,
 });
 

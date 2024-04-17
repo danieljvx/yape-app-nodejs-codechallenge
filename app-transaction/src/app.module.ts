@@ -10,12 +10,12 @@ import { TransactionsModule } from './transactions/transactions.module';
   imports: [
     TransactionsModule,
     TypeOrmModule.forRoot({
-      type: 'postgres', // Use 'mysql' for MySQL
-      host: 'postgres',
-      port: 5432, // Default port
-      username: 'postgres',
-      password: 'postgres',
-      database: 'postgres',
+      type: 'postgres',
+      host: `${process.env.PG_HOST || 'localhost'}`,
+      port: parseFloat(`${process.env.PG_PORT || '5432'}`),
+      username: `${process.env.PG_USER || 'postgres'}`,
+      password: `${process.env.PG_PASS || 'postgres'}`,
+      database: `${process.env.PG_DB || 'postgres'}`,
       entities: ['dist/**/*.entity.{ts,js}'],
       synchronize: true, // Set to false in production
     }),

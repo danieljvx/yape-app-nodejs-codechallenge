@@ -100,19 +100,58 @@ Two apps's Nest.js `app-anti-fraud`, `app-transaction`
 
 ![](./assets/db-diagram.png)
 
-### `1 - Up Docker Containers:`
+### `1 - Up Docker Containers postgres, zookeeper, kafka:`
 
 ```bash
-# (postgres, zookeeper, kafka, app-transaction, app-anti-fraud)
+# (postgres, zookeeper, kafka)
 $ docker-compose up
 ```
 
 ### `2 - Import database:`
 ```bash
-docker-compose exec -i postgres psql -U postgres -d postgres < ./sql/init.sql"
+docker-compose exec -T postgres psql -U postgres -d postgres < ./app-transaction/sql/data.sql
 ```
 
-### `Local:`
+### `3 - Up App app-transaction`
+
+```bash
+# into foler ./app-transaction
+$ cd app-transaction
+
+# copy .env.example file to .env
+$ cp .env.example .env
+
+# install dependency
+$ yarn install
+
+# watch mode
+$ yarn run start:dev
+
+# production mode
+$ yarn run start:prod
+```
+
+### `4 - Up App app-anti-fraud`
+
+
+```bash
+# into foler ./app-anti-fraud
+$ cd app-anti-fraud
+
+# copy .env.example file to .env
+$ cp .env.example .env
+
+# install dependency
+$ yarn install
+
+# watch mode
+$ yarn run start:dev
+
+# production mode
+$ yarn run start:prod
+```
+
+### `Local Apps:`
 | Resource            | Url                                                                                        |
 |---------------------|--------------------------------------------------------------------------------------------|
 | app-transaction     | [http://localhost:3000](http://localhost:3000)                                             |

@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { kafkaConsumer, kafkaProducer } from 'kafka.config';
 import { Producer } from 'kafkajs';
-import { TransactionDto } from './dto/transaction.dto';
 import { TopicsEnum } from 'src/enums/topics.enum';
 import { ValueEnum } from 'src/enums/value.enum';
+import { TransactionTopicCreated } from './dto/transaction-topic-created.dto';
+import { TransactionTopicStatus } from './dto/transaction-topic-status.dto';
 
 @Injectable()
 export class AntiFraudService {
@@ -12,18 +13,19 @@ export class AntiFraudService {
     this.initializeTransactionCreatedConsumer();
   }
 
-  private async validate(transaction: TransactionDto): Promise<void> {
-    transaction.transactionStatus.id =
-      transaction.value <= ValueEnum.MAX_LIMIT ? 2 : 3;
-    await this.sendTransactionStatusEvent(transaction);
+  private async validate(transaction: TransactionTopicCreated): Promise<void> {
+    const transactionTopicStatus: TransactionTopicStatus = {
+      id: transaction.id,
+      status: transaction.value <= ValueEnum.MAX_LIMIT ? 2 : 3,
+    };
+    await this.sendTransactionStatusEvent(transactionTopicStatus);
   }
 
   private async sendTransactionStatusEvent(
-    transaction: TransactionDto,
+    transaction: TransactionTopicStatus,
   ): Promise<void> {
-    console.log(
-      `Send message transaction-status:\n${JSON.stringify(transaction)}`,
-    );
+    console.log('AntiFraud - Send message transaction-status:');
+    console.log(transaction);
     await kafkaProducer.connect();
     await kafkaProducer.send({
       topic: TopicsEnum.TRANSACTION_STATUS,
@@ -46,11 +48,11 @@ export class AntiFraudService {
       eachMessage: async ({ message }) => {
         const ourBuffer = Buffer.from(message.value);
         const t = ourBuffer.toString('utf8');
-        console.log('Received Created Transaction:\n');
+        console.log('AntiFraud - Received message transaction-created:');
         console.log(t);
-        const transaction: TransactionDto = JSON.parse(
+        const transaction: TransactionTopicCreated = JSON.parse(
           t as unknown as string,
-        ) as TransactionDto;
+        ) as TransactionTopicCreated;
         await this.validate(transaction);
       },
     });
