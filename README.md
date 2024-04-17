@@ -104,20 +104,15 @@ Two apps's Nest.js `app-anti-fraud`, `app-transaction`
 
 ![](./assets/db-diagram.png)
 
-### `1 - Up Docker Containers postgres, zookeeper, kafka:`
+## Steps one by one
 
+### `1 - Up Docker Containers postgres, zookeeper, kafka:`
 ```bash
 # (postgres, zookeeper, kafka)
 $ docker-compose up
 ```
 
-### `2 - Import database:`
-```bash
-docker-compose exec -T postgres psql -U postgres -d postgres < ./app-transaction/sql/data.sql
-```
-
-### `3 - Up App app-transaction`
-
+### `2 - Up App app-transaction`
 ```bash
 # into foler ./app-transaction
 $ cd app-transaction
@@ -135,9 +130,12 @@ $ yarn run start:dev
 $ yarn run start:prod
 ```
 
+### `3 - Import database:`
+```bash
+docker-compose exec -T postgres psql -U postgres -d postgres < ./app-transaction/sql/data.sql
+```
+
 ### `4 - Up App app-anti-fraud`
-
-
 ```bash
 # into foler ./app-anti-fraud
 $ cd app-anti-fraud
